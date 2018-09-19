@@ -38,6 +38,7 @@ WORKDIR /linux
 ENV PKGVERSION 1terra
 
 RUN /wireguard/contrib/kernel-tree/create-patch.sh | patch -p1
+RUN make olddefconfig
 RUN make -j "$(getconf _NPROCESSORS_ONLN)" KDEB_PKGVERSION=$PKGVERSION INSTALL_MOD_STRIP=1 bindeb-pkg
 
 FROM scratch
