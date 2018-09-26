@@ -6,9 +6,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/codegangsta/cli"
+	"github.com/pkg/errors"
 	"github.com/pkg/sftp"
 	"github.com/stellarproject/terra/utils"
+	"github.com/urfave/cli"
 )
 
 const (
@@ -28,6 +29,11 @@ var Command = cli.Command{
 			Name:  "host",
 			Usage: "host to target for installation",
 			Value: "",
+		},
+		cli.StringSliceFlag{
+			Name:  "assembly, a",
+			Usage: "additional assemblies to install on the remote host",
+			Value: &cli.StringSlice{},
 		},
 		cli.StringFlag{
 			Name:  "namespace, n",
@@ -102,17 +108,18 @@ func bootstrap(ctx *cli.Context) error {
 	tag := ctx.String("tag")
 	assemblies := []string{
 		"containerd",
-		"buildkit",
 		"cni-plugins",
+		"buildkit",
 	}
+
+	assemblies = append(assemblies, ctx.StringSlice("assembly")...)
 
 	for _, assembly := range assemblies {
 		img := fmt.Sprintf("docker.io/%s/%s:%s", namespace, assembly, tag)
 		cmd := terraPath + " install " + img
 		out, err := sshConn.Exec(cmd)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, string(out))
-			return err
+			return errors.Wrap(err, string(out))
 		}
 
 		fmt.Fprintf(os.Stdout, string(out))

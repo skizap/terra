@@ -3,8 +3,8 @@ package install
 import (
 	"fmt"
 
-	"github.com/codegangsta/cli"
 	"github.com/stellarproject/terra/installer"
+	"github.com/urfave/cli"
 )
 
 // Command is the install CLI command

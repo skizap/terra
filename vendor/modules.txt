@@ -13,8 +13,6 @@ github.com/Microsoft/hcsshim/internal/wclayer
 github.com/Microsoft/hcsshim/internal/timeout
 github.com/Microsoft/hcsshim/internal/longpath
 github.com/Microsoft/hcsshim/internal/safefile
-# github.com/codegangsta/cli v1.20.0
-github.com/codegangsta/cli
 # github.com/containerd/containerd v1.1.3 => github.com/containerd/containerd v1.2.0-rc.0.0.20180921182233-87d1118a0f35
 github.com/containerd/containerd/archive
 github.com/containerd/containerd/archive/compression
@@ -61,6 +59,8 @@ github.com/pkg/errors
 github.com/pkg/sftp
 # github.com/sirupsen/logrus v1.0.6
 github.com/sirupsen/logrus
+# github.com/urfave/cli v1.20.0 => github.com/urfave/cli v1.20.1-0.20180821064027-934abfb2f102
+github.com/urfave/cli
 # golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/agent

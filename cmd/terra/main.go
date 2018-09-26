@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/codegangsta/cli"
 	"github.com/sirupsen/logrus"
 	"github.com/stellarproject/terra/cmd/terra/bootstrap"
 	"github.com/stellarproject/terra/cmd/terra/install"
 	"github.com/stellarproject/terra/version"
+	"github.com/urfave/cli"
 )
 
 func main() {
