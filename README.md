@@ -1,15 +1,12 @@
-# terra
+# Terra
 
 ![terra](terra.png)
 
-Building custom mainline kernels for a solid foundation.
+Terra handles node management for the Stellar Project.
 
-## Building
+# Getting Started
+To build, run `make`.  This will create a `bin/terra`.
 
-Use a provided `config` or copy your own into the current directory.
-
-```bash
-> orbit build --local
-```
+To initialize a node, run `terra bootstrap <ssh-host>`.  This will install the base components for node management.
 
 [Photo](https://www.pexels.com/photo/astronomy-atmosphere-earth-exploration-220201/)
