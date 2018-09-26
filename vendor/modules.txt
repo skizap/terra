@@ -1,0 +1,86 @@
+# github.com/Microsoft/go-winio v0.4.11
+github.com/Microsoft/go-winio
+# github.com/Microsoft/hcsshim v0.7.4
+github.com/Microsoft/hcsshim
+github.com/Microsoft/hcsshim/internal/guid
+github.com/Microsoft/hcsshim/internal/hcs
+github.com/Microsoft/hcsshim/internal/hcserror
+github.com/Microsoft/hcsshim/internal/hns
+github.com/Microsoft/hcsshim/internal/interop
+github.com/Microsoft/hcsshim/internal/mergemaps
+github.com/Microsoft/hcsshim/internal/schema1
+github.com/Microsoft/hcsshim/internal/wclayer
+github.com/Microsoft/hcsshim/internal/timeout
+github.com/Microsoft/hcsshim/internal/longpath
+github.com/Microsoft/hcsshim/internal/safefile
+# github.com/codegangsta/cli v1.20.0
+github.com/codegangsta/cli
+# github.com/containerd/containerd v1.1.3 => github.com/containerd/containerd v1.2.0-rc.0.0.20180921182233-87d1118a0f35
+github.com/containerd/containerd/archive
+github.com/containerd/containerd/archive/compression
+github.com/containerd/containerd/content
+github.com/containerd/containerd/content/local
+github.com/containerd/containerd/images
+github.com/containerd/containerd/remotes
+github.com/containerd/containerd/remotes/docker
+github.com/containerd/containerd/log
+github.com/containerd/containerd/sys
+github.com/containerd/containerd/errdefs
+github.com/containerd/containerd/filters
+github.com/containerd/containerd/platforms
+github.com/containerd/containerd/reference
+# github.com/containerd/continuity v0.0.0-20180921161001-7f53d412b9eb
+github.com/containerd/continuity/fs
+github.com/containerd/continuity/sysx
+github.com/containerd/continuity
+github.com/containerd/continuity/syscallx
+github.com/containerd/continuity/devices
+github.com/containerd/continuity/driver
+github.com/containerd/continuity/pathdriver
+github.com/containerd/continuity/proto
+# github.com/golang/protobuf v1.2.0
+github.com/golang/protobuf/proto
+github.com/golang/protobuf/ptypes
+github.com/golang/protobuf/ptypes/any
+github.com/golang/protobuf/ptypes/duration
+github.com/golang/protobuf/ptypes/timestamp
+# github.com/kr/fs v0.1.0
+github.com/kr/fs
+# github.com/mitchellh/go-homedir v1.0.0
+github.com/mitchellh/go-homedir
+# github.com/opencontainers/go-digest v1.0.0-rc1
+github.com/opencontainers/go-digest
+# github.com/opencontainers/image-spec v1.0.1
+github.com/opencontainers/image-spec/specs-go/v1
+github.com/opencontainers/image-spec/specs-go
+# github.com/opencontainers/runc v0.1.1
+github.com/opencontainers/runc/libcontainer/system
+# github.com/pkg/errors v0.8.0
+github.com/pkg/errors
+# github.com/pkg/sftp v1.8.3
+github.com/pkg/sftp
+# github.com/sirupsen/logrus v1.0.6
+github.com/sirupsen/logrus
+# golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b
+golang.org/x/crypto/ssh
+golang.org/x/crypto/ssh/agent
+golang.org/x/crypto/ssh/terminal
+golang.org/x/crypto/curve25519
+golang.org/x/crypto/ed25519
+golang.org/x/crypto/internal/chacha20
+golang.org/x/crypto/poly1305
+golang.org/x/crypto/ed25519/internal/edwards25519
+golang.org/x/crypto/internal/subtle
+# golang.org/x/net v0.0.0-20180921000356-2f5d2388922f
+golang.org/x/net/context/ctxhttp
+golang.org/x/net/context
+# golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
+golang.org/x/sync/errgroup
+# golang.org/x/sys v0.0.0-20180920110915-d641721ec2de
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8
+google.golang.org/genproto/googleapis/rpc/status
+# google.golang.org/grpc v1.15.0
+google.golang.org/grpc/codes
+google.golang.org/grpc/status
