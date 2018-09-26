@@ -18,26 +18,27 @@ type AssemblyInstaller struct {
 }
 
 // Install performs the assembly installation
-func (a *AssemblyInstaller) Install() ([]byte, error) {
+func (a *AssemblyInstaller) Install() error {
 	tmpdir, err := ioutil.TempDir("", "terra-assembly-")
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer os.RemoveAll(tmpdir)
 
 	if err := FetchImage(a.Image, tmpdir); err != nil {
-		return nil, err
+		return err
 	}
 
 	// exec 'install' from package
 	cmd := exec.Command("./install")
 	cmd.Dir = tmpdir
 	cmd.Env = os.Environ()
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, err
+	if err := cmd.Run(); err != nil {
+		return err
 	}
 
-	return out, nil
+	return nil
 }

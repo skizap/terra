@@ -2,10 +2,8 @@ package install
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/codegangsta/cli"
-	"github.com/pkg/errors"
 	"github.com/stellarproject/terra/installer"
 )
 
@@ -26,10 +24,8 @@ func install(ctx *cli.Context) error {
 	i := &installer.AssemblyInstaller{
 		Image: image,
 	}
-	out, err := i.Install()
-	if err != nil {
-		return errors.Wrap(err, string(out))
+	if err := i.Install(); err != nil {
+		return err
 	}
-	fmt.Fprintf(os.Stdout, string(out))
 	return nil
 }

@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"bytes"
+	"io"
 	"io/ioutil"
 	"net"
 	"os"
@@ -53,13 +53,32 @@ func (c *SSHClient) Exec(cmd string) ([]byte, error) {
 	}
 	defer session.Close()
 
-	var b bytes.Buffer
-	session.Stdout = &b
-	if err := session.Run(cmd); err != nil {
+	sout, err := session.StdoutPipe()
+	if err != nil {
 		return nil, err
 	}
 
-	return b.Bytes(), nil
+	serr, err := session.StderrPipe()
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		io.Copy(os.Stdout, sout)
+	}()
+
+	go func() {
+		io.Copy(os.Stderr, serr)
+	}()
+
+	if err := session.Start(cmd); err != nil {
+		return nil, err
+	}
+
+	if err := session.Wait(); err != nil {
+		return nil, err
+	}
+
+	return nil, nil
 }
 
 // Close closes the underlying connection
