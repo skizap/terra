@@ -45,5 +45,6 @@ install:
 
 clean:
 	@rm -rf bin/
+	@rm -rf ./*.deb
 
 .PHONY: generate clean check test install app binaries

@@ -1,11 +1,12 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/codegangsta/cli"
 	"github.com/sirupsen/logrus"
+	"github.com/stellarproject/terra/cmd/terra/bootstrap"
 	"github.com/stellarproject/terra/cmd/terra/install"
 	"github.com/stellarproject/terra/version"
 )
@@ -25,6 +26,7 @@ func main() {
 	}
 	app.Commands = []cli.Command{
 		install.Command,
+		bootstrap.Command,
 	}
 	app.Before = func(ctx *cli.Context) error {
 		if ctx.Bool("debug") {
@@ -35,6 +37,7 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, err.Error()+"\n")
+		os.Exit(1)
 	}
 }

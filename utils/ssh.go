@@ -13,10 +13,12 @@ import (
 	"golang.org/x/crypto/ssh/agent"
 )
 
+// SSHClient is a client to connect and interact with a remote SSH server
 type SSHClient struct {
 	client *ssh.Client
 }
 
+// NewSSHClient returns a new SSHClient to use with a remote host
 func NewSSHClient(user, host string) (*SSHClient, error) {
 	authMethods, err := getAuthMethods()
 	if err != nil {
@@ -38,10 +40,12 @@ func NewSSHClient(user, host string) (*SSHClient, error) {
 	}, nil
 }
 
+// Client returns the underlying `ssh.Client`
 func (c *SSHClient) Client() *ssh.Client {
 	return c.client
 }
 
+// Exec runs a command on the remote host and returns the output
 func (c *SSHClient) Exec(cmd string) ([]byte, error) {
 	session, err := c.client.NewSession()
 	if err != nil {
@@ -58,6 +62,7 @@ func (c *SSHClient) Exec(cmd string) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
+// Close closes the underlying connection
 func (c *SSHClient) Close() error {
 	return c.client.Close()
 }
