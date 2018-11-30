@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package io.stellarproject.terra.v1;
+
+import weak "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/stellarproject/nebula/terra/v1;v1";
+
+service Terra {
+	rpc List(ListRequest) returns (ListResponse);
+	rpc Apply(ApplyRequest) returns (google.protobuf.Empty);
+}
+
+message ListRequest {}
+
+message ListResponse {
+        ManifestList manifest_list = 1;
+}
+
+message Assembly {
+        string image = 1;
+}
+
+message Manifest {
+	string node_id = 1 [(gogoproto.customname) = "NodeID"];
+        repeated Assembly assemblies = 2;
+}
+
+message ManifestList {
+        repeated Manifest manifests = 1;
+	google.protobuf.Timestamp updated = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+}
+
+message ApplyRequest {
+        ManifestList manifest_list = 1;
+}
