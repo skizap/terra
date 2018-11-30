@@ -4,13 +4,12 @@ COMMIT=`git rev-parse --short HEAD`
 NAMESPACE?=stellarproject
 IMAGE_NAMESPACE?=$(NAMESPACE)
 APP=terra
+CLI=tctl
 REPO?=$(NAMESPACE)/$(APP)
 TAG?=dev
 BUILD?=-dev
 BUILD_ARGS?=
 PACKAGES=$(shell go list ./... | grep -v -e /vendor/)
-EXTENSIONS=$(wildcard extensions/*)
-CYCLO_PACKAGES=$(shell go list ./... | grep -v /vendor/ | sed "s/github.com\/$(NAMESPACE)\/$(APP)\///g" | tail -n +2)
 CWD=$(PWD)
 
 all: binaries
@@ -18,7 +17,7 @@ all: binaries
 generate:
 	@echo ${PACKAGES} | xargs protobuild -quiet
 
-binaries: app
+binaries: app cli
 	@echo " -> Built $(TAG) version ${COMMIT} (${GOOS}/${GOARCH})"
 
 bindir:
@@ -26,6 +25,9 @@ bindir:
 
 app: bindir
 	@cd cmd/$(APP) && CGO_ENABLED=0 go build -installsuffix cgo -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT) -X github.com/$(REPO)/version.Build=$(BUILD)" -o ../../bin/$(APP) .
+
+cli: bindir
+	@cd cmd/$(CLI) && CGO_ENABLED=0 go build -installsuffix cgo -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT) -X github.com/$(REPO)/version.Build=$(BUILD)" -o ../../bin/$(CLI) .
 
 vet:
 	@echo " -> $@"

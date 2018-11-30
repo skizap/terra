@@ -1,4 +1,4 @@
-package bootstrap
+package main
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ const (
 	terraPath = "/usr/local/bin/terra"
 )
 
-var Command = cli.Command{
+var bootstrapCommand = cli.Command{
 	Name:  "bootstrap",
 	Usage: "initialize terra on remote host",
 	Flags: []cli.Flag{
@@ -46,10 +46,10 @@ var Command = cli.Command{
 			Value: "latest",
 		},
 	},
-	Action: bootstrap,
+	Action: bootstrapAction,
 }
 
-func bootstrap(ctx *cli.Context) error {
+func bootstrapAction(ctx *cli.Context) error {
 	host := ctx.String("host")
 	user := ctx.String("user")
 	if host == "" || user == "" {

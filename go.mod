@@ -3,11 +3,20 @@ module github.com/stellarproject/terra
 require (
 	github.com/Microsoft/go-winio v0.4.11 // indirect
 	github.com/Microsoft/hcsshim v0.7.4 // indirect
+	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da // indirect
 	github.com/containerd/containerd v1.1.3
 	github.com/containerd/continuity v0.0.0-20180921161001-7f53d412b9eb // indirect
+	github.com/containerd/typeurl v0.0.0-20181015155603-461401dc8f19
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/gogo/protobuf v1.1.1
 	github.com/google/go-cmp v0.2.0 // indirect
+	github.com/hashicorp/go-immutable-radix v1.0.0 // indirect
+	github.com/hashicorp/go-msgpack v0.0.0-20150518234257-fa3f63826f7c // indirect
+	github.com/hashicorp/go-multierror v1.0.0 // indirect
+	github.com/hashicorp/go-sockaddr v0.0.0-20180320115054-6d291a969b86 // indirect
+	github.com/hashicorp/memberlist v0.1.0 // indirect
 	github.com/kr/fs v0.1.0 // indirect
+	github.com/miekg/dns v1.1.0 // indirect
 	github.com/mitchellh/go-homedir v1.0.0
 	github.com/onsi/gomega v1.4.2 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
@@ -16,13 +25,14 @@ require (
 	github.com/pkg/errors v0.8.0
 	github.com/pkg/sftp v1.8.3
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/sirupsen/logrus v1.0.6
+	github.com/stellarproject/element v0.0.0-20181130035726-db23484f9fd5
+	github.com/stellarproject/nebula v0.0.0-20181130042044-7b0ffff6314d
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/urfave/cli v1.20.0
 	golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b
-	golang.org/x/net v0.0.0-20180921000356-2f5d2388922f // indirect
-	golang.org/x/sys v0.0.0-20180920110915-d641721ec2de // indirect
-	google.golang.org/grpc v1.15.0 // indirect
+	google.golang.org/grpc v1.15.0
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
 	gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2 // indirect
 	gotest.tools v2.1.0+incompatible // indirect

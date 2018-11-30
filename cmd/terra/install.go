@@ -1,4 +1,4 @@
-package install
+package main
 
 import (
 	"fmt"
@@ -7,15 +7,14 @@ import (
 	"github.com/urfave/cli"
 )
 
-// Command is the install CLI command
-var Command = cli.Command{
+var installCommand = cli.Command{
 	Name:      "install",
 	Usage:     "install assembly",
 	ArgsUsage: "[IMAGE]",
-	Action:    install,
+	Action:    installAction,
 }
 
-func install(ctx *cli.Context) error {
+func installAction(ctx *cli.Context) error {
 	image := ctx.Args().First()
 	if image == "" {
 		cli.ShowSubcommandHelp(ctx)
