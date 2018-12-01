@@ -142,6 +142,11 @@ func (a *Agent) Start() error {
 	return a.grpcServer.Serve(l)
 }
 
+func (a *Agent) Stop() error {
+	a.clusterAgent.Shutdown()
+	return nil
+}
+
 func (a *Agent) sync() {
 	t := time.NewTicker(time.Second * 10)
 	for range t.C {

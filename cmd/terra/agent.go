@@ -2,7 +2,9 @@ package main
 
 import (
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 
 	"github.com/sirupsen/logrus"
 	"github.com/stellarproject/terra/agent"
@@ -96,7 +98,46 @@ func agentAction(ctx *cli.Context) error {
 
 	logrus.Infof("starting terra agent on %s", cfg.GRPCAddress)
 
-	return a.Start()
+	errCh := make(chan error)
+	go func() {
+		for err := range errCh {
+			logrus.Error(err)
+		}
+	}()
+
+	go func() {
+		if err := a.Start(); err != nil {
+			errCh <- err
+		}
+	}()
+
+	signals := make(chan os.Signal)
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+	doneCh := make(chan bool, 1)
+	go func() {
+		for {
+			select {
+			case sig := <-signals:
+				switch sig {
+				case syscall.SIGTERM, syscall.SIGINT:
+					logrus.Info("shutting down")
+					if err := a.Stop(); err != nil {
+						logrus.Error(err)
+					}
+					doneCh <- true
+				default:
+					logrus.Warnf("unhandled signal %s", sig)
+
+				}
+
+			}
+
+		}
+
+	}()
+
+	<-doneCh
+	return nil
 }
 
 func getHostname() string {

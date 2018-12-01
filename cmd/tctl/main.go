@@ -43,8 +43,8 @@ func main() {
 		},
 	}
 	app.Commands = []cli.Command{
-		listCommand,
-		applyCommand,
+		clusterCommand,
+		manifestCommand,
 	}
 	app.Before = func(ctx *cli.Context) error {
 		if ctx.Bool("debug") {

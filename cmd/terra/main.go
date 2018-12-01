@@ -24,7 +24,6 @@ func main() {
 	}
 	app.Commands = []cli.Command{
 		agentCommand,
-		installCommand,
 		bootstrapCommand,
 	}
 	app.Before = func(ctx *cli.Context) error {

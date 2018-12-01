@@ -86,6 +86,8 @@ github.com/stellarproject/nebula v0.0.0-20181130042044-7b0ffff6314d h1:a0Ej45mmK
 github.com/stellarproject/nebula v0.0.0-20181130042044-7b0ffff6314d/go.mod h1:eSqW9qGtPnx//7+SY6Jj6YCacrUo2mBCXVsrAuJbR4E=
 github.com/stellarproject/nebula v0.0.0-20181130062010-2e26b24e4d19 h1:NDpxUj1X0UXWKl3NxHehji7TbaLH499eyJIYavbk7jM=
 github.com/stellarproject/nebula v0.0.0-20181130062010-2e26b24e4d19/go.mod h1:eSqW9qGtPnx//7+SY6Jj6YCacrUo2mBCXVsrAuJbR4E=
+github.com/stellarproject/nebula v0.0.0-20181201041556-96ca277202b9 h1:Sz61OGgSr+26DNEbDE0ZfgK+Ava8yC40w6i8qyCXM2w=
+github.com/stellarproject/nebula v0.0.0-20181201041556-96ca277202b9/go.mod h1:eSqW9qGtPnx//7+SY6Jj6YCacrUo2mBCXVsrAuJbR4E=
 github.com/stretchr/testify v1.2.2 h1:bSDNvY7ZPG5RlJ8otE/7V6gMiyenm9RtJ7IUVIAoJ1w=
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/urfave/cli v1.20.0 h1:fDqGv3UG/4jbVl/QkFwEdddtEDjh/5Ov6X+0B/3bPaw=

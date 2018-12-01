@@ -28,7 +28,7 @@ require (
 	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/sirupsen/logrus v1.0.6
 	github.com/stellarproject/element v0.0.0-20181130035726-db23484f9fd5
-	github.com/stellarproject/nebula v0.0.0-20181130062010-2e26b24e4d19
+	github.com/stellarproject/nebula v0.0.0-20181201041556-96ca277202b9
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/urfave/cli v1.20.0
 	go.etcd.io/bbolt v1.3.0
