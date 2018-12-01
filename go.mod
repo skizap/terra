@@ -6,7 +6,7 @@ require (
 	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da // indirect
 	github.com/containerd/containerd v1.1.3
 	github.com/containerd/continuity v0.0.0-20180921161001-7f53d412b9eb // indirect
-	github.com/containerd/typeurl v0.0.0-20181015155603-461401dc8f19
+	github.com/containerd/typeurl v0.0.0-20181015155603-461401dc8f19 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gogo/protobuf v1.1.1
 	github.com/google/go-cmp v0.2.0 // indirect

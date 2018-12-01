@@ -62,6 +62,11 @@ var agentCommand = cli.Command{
 			Name:  "tls-insecure-skip-verify",
 			Usage: "skip tls verification",
 		},
+		cli.StringFlag{
+			Name:  "data-dir",
+			Usage: "terra agent data directory",
+			Value: "/var/lib/terra",
+		},
 	},
 	Action: agentAction,
 }
@@ -77,6 +82,7 @@ func agentAction(ctx *cli.Context) error {
 		ClusterAddress:        ctx.String("cluster-address"),
 		AdvertiseAddress:      ctx.String("advertise-address"),
 		ConnectionType:        ctx.String("connection-type"),
+		DataDir:               ctx.String("data-dir"),
 		Peers:                 ctx.StringSlice("peer"),
 		Labels:                labels,
 		TLSServerCertificate:  ctx.String("tls-cert"),

@@ -1,9 +1,19 @@
 package main
 
 import (
-	"fmt"
+	"html/template"
+	"os"
 
 	"github.com/urfave/cli"
+)
+
+const (
+	listTemplate = `{{ range .Manifests }}- NodeID: {{ .NodeID }} {{ if .Labels }}
+  Labels: {{ .Labels }}{{ end }}
+  Assemblies:
+{{ range .Assemblies }}    - Image: {{ .Image }}
+{{ end }}
+{{ end }}`
 )
 
 var listCommand = cli.Command{
@@ -20,12 +30,24 @@ func list(ctx *cli.Context) error {
 	}
 	defer c.Close()
 
-	assemblies, err := c.List()
+	manifestList, err := c.List()
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(assemblies)
+	if manifestList == nil {
+		return nil
+	}
+
+	t := template.New("list")
+	tmpl, err := t.Parse(listTemplate)
+	if err != nil {
+		return err
+	}
+
+	if err := tmpl.Execute(os.Stdout, manifestList); err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -7,15 +7,8 @@ import (
 )
 
 func (a *Agent) List(ctx context.Context, req *api.ListRequest) (*api.ListResponse, error) {
-	resp := &api.ListResponse{}
-	payload := a.clusterAgent.Self().Payload
-	if payload != nil {
-		ml, err := parseManifestList(payload)
-		if err != nil {
-			return nil, err
-		}
-
-		resp.ManifestList = ml
+	resp := &api.ListResponse{
+		ManifestList: a.manifestList,
 	}
 	return resp, nil
 }
