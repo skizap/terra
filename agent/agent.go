@@ -36,6 +36,7 @@ type Agent struct {
 	mu           *sync.Mutex
 	manifestList *api.ManifestList
 	db           *bolt.DB
+	updating     bool
 }
 
 type AgentConfig struct {
@@ -115,6 +116,7 @@ func NewAgent(cfg *AgentConfig) (*Agent, error) {
 		clusterAgent: agt,
 		mu:           &sync.Mutex{},
 		db:           db,
+		updating:     false,
 	}
 	api.RegisterTerraServer(grpcServer, agent)
 
@@ -143,6 +145,10 @@ func (a *Agent) Start() error {
 func (a *Agent) sync() {
 	t := time.NewTicker(time.Second * 10)
 	for range t.C {
+		// skip if currently updating
+		if a.updating {
+			continue
+		}
 		if err := a.syncWithPeers(); err != nil {
 			logrus.Error(err)
 		}
@@ -195,7 +201,6 @@ func (a *Agent) syncWithPeers() error {
 				"peer":    peer.ID,
 				"updated": ml.Updated,
 			}).Info("synchronized with peer")
-			// TODO: apply assemblies in manifest
 		}
 		c.Close()
 	}
@@ -206,6 +211,9 @@ func (a *Agent) syncWithPeers() error {
 func (a *Agent) updateManifestList(ml *api.ManifestList) error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
+	defer func() {
+		a.updating = false
+	}()
 
 	// update in memory copy
 	a.manifestList = ml
@@ -223,6 +231,13 @@ func (a *Agent) updateManifestList(ml *api.ManifestList) error {
 	}
 
 	logrus.WithField("updated", ml.Updated).Info("updated manifest list")
+	// apply assemblies in manifest
+	a.updating = true
+	logrus.Debug("applying manifest list")
+	if err := a.applyManifestList(ml); err != nil {
+		logrus.WithError(err).Error("error applying manifest list")
+	}
+	logrus.Debug("apply complete")
 
 	return nil
 }
