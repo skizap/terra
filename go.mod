@@ -31,6 +31,7 @@ require (
 	github.com/stellarproject/nebula v0.0.0-20181130062010-2e26b24e4d19
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/urfave/cli v1.20.0
+	go.etcd.io/bbolt v1.3.0
 	golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b
 	google.golang.org/grpc v1.15.0
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect

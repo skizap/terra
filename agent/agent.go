@@ -3,7 +3,6 @@ package agent
 import (
 	"crypto/tls"
 	"encoding/json"
-	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
@@ -15,8 +14,15 @@ import (
 	"github.com/stellarproject/element"
 	api "github.com/stellarproject/nebula/terra/v1"
 	"github.com/stellarproject/terra/client"
+	bolt "go.etcd.io/bbolt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+)
+
+const (
+	bucketState      = "io.stellarproject.terra.v1.state"
+	bucketAssemblies = "io.stellarproject.terra.v1.assemblies"
+	keyManifestList  = "manifest-list"
 )
 
 var (
@@ -29,7 +35,7 @@ type Agent struct {
 	clusterAgent *element.Agent
 	mu           *sync.Mutex
 	manifestList *api.ManifestList
-	statePath    string
+	db           *bolt.DB
 }
 
 type AgentConfig struct {
@@ -47,6 +53,10 @@ type AgentConfig struct {
 }
 
 func NewAgent(cfg *AgentConfig) (*Agent, error) {
+	if err := os.MkdirAll(cfg.DataDir, 0755); err != nil {
+		return nil, err
+	}
+
 	grpcOpts := []grpc.ServerOption{}
 	if cfg.TLSServerCertificate != "" && cfg.TLSServerKey != "" {
 		logrus.WithFields(logrus.Fields{
@@ -81,13 +91,30 @@ func NewAgent(cfg *AgentConfig) (*Agent, error) {
 		return nil, err
 	}
 
+	// database setup
+	dbPath := filepath.Join(cfg.DataDir, "terra.db")
+	db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
+	if err != nil {
+		return nil, err
+	}
+	if err := db.Update(func(tx *bolt.Tx) error {
+		for _, b := range []string{bucketState, bucketAssemblies} {
+			if _, err := tx.CreateBucketIfNotExists([]byte(b)); err != nil {
+				return err
+			}
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
 	grpcServer := grpc.NewServer(grpcOpts...)
 	agent := &Agent{
 		grpcServer:   grpcServer,
 		config:       cfg,
 		clusterAgent: agt,
 		mu:           &sync.Mutex{},
-		statePath:    filepath.Join(cfg.DataDir, "state.json"),
+		db:           db,
 	}
 	api.RegisterTerraServer(grpcServer, agent)
 
@@ -167,7 +194,7 @@ func (a *Agent) syncWithPeers() error {
 			logrus.WithFields(logrus.Fields{
 				"peer":    peer.ID,
 				"updated": ml.Updated,
-			}).Info("synchronized payload with peer")
+			}).Info("synchronized with peer")
 			// TODO: apply assemblies in manifest
 		}
 		c.Close()
@@ -183,19 +210,19 @@ func (a *Agent) updateManifestList(ml *api.ManifestList) error {
 	// update in memory copy
 	a.manifestList = ml
 
-	if err := os.MkdirAll(a.config.DataDir, 0755); err != nil {
-		return err
-	}
-
 	// persist to disk
-	data, err := json.Marshal(ml)
-	if err != nil {
+	if err := a.db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucketState))
+		data, err := json.Marshal(ml)
+		if err != nil {
+			return err
+		}
+		return b.Put([]byte(keyManifestList), data)
+	}); err != nil {
 		return err
 	}
 
-	if err := ioutil.WriteFile(a.statePath, data, 0644); err != nil {
-		return err
-	}
+	logrus.WithField("updated", ml.Updated).Info("updated manifest list")
 
 	return nil
 }
@@ -204,25 +231,27 @@ func (a *Agent) restoreState() error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
-	if _, err := os.Stat(a.statePath); err != nil {
-		if os.IsNotExist(err) {
+	var ml *api.ManifestList
+	if err := a.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucketState))
+		v := b.Get([]byte(keyManifestList))
+
+		if v == nil {
 			return nil
 		}
 
+		if err := json.Unmarshal(v, &ml); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
 		return err
 	}
 
-	var ml *api.ManifestList
-	f, err := os.Open(a.statePath)
-	if err != nil {
-		return err
+	if ml != nil {
+		a.manifestList = ml
+		logrus.WithField("updated", a.manifestList.Updated).Debug("restored state")
 	}
 
-	if err := json.NewDecoder(f).Decode(&ml); err != nil {
-		return err
-	}
-
-	a.manifestList = ml
-	logrus.WithField("statePath", a.statePath).Debug("restored state")
 	return nil
 }
