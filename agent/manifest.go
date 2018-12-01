@@ -39,7 +39,7 @@ func (a *Agent) applyManifestList(ml *api.ManifestList) error {
 func (a *Agent) applyManifest(m *api.Manifest) error {
 	matches := false
 	// check if node id matches
-	if m.NodeID == "" || a.config.NodeID == m.NodeID {
+	if m.NodeID == "" && len(m.Labels) == 0 || a.config.NodeID == m.NodeID {
 		matches = true
 	}
 	// check labels
