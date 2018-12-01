@@ -21,6 +21,10 @@ import (
 )
 
 func (a *Agent) applyManifestList(ml *api.ManifestList) error {
+	a.updating = true
+	defer func() {
+		a.updating = false
+	}()
 	// check assemblies and install if needed
 	for _, manifest := range ml.Manifests {
 		if err := a.applyManifest(manifest); err != nil {
@@ -53,7 +57,7 @@ func (a *Agent) applyManifest(m *api.Manifest) error {
 	}
 
 	for _, assembly := range m.Assemblies {
-		logrus.WithField("image", assembly.Image).Debug("applying assembly")
+		logrus.WithField("image", assembly.Image).Info("applying assembly")
 		if output, err := a.applyAssembly(assembly); err != nil {
 			logrus.WithError(err).Errorf("error applying assembly %s: %s", assembly.Image, string(output))
 			continue

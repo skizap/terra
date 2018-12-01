@@ -216,9 +216,6 @@ func (a *Agent) syncWithPeers() error {
 func (a *Agent) updateManifestList(ml *api.ManifestList) error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	defer func() {
-		a.updating = false
-	}()
 
 	// update in memory copy
 	a.manifestList = ml
@@ -237,12 +234,13 @@ func (a *Agent) updateManifestList(ml *api.ManifestList) error {
 
 	logrus.WithField("updated", ml.Updated).Info("updated manifest list")
 	// apply assemblies in manifest
-	a.updating = true
-	logrus.Debug("applying manifest list")
-	if err := a.applyManifestList(ml); err != nil {
-		logrus.WithError(err).Error("error applying manifest list")
-	}
-	logrus.Debug("apply complete")
+	go func() {
+		logrus.Debug("applying manifest list")
+		if err := a.applyManifestList(ml); err != nil {
+			logrus.WithError(err).Error("error applying manifest list")
+		}
+		logrus.Info("apply complete")
+	}()
 
 	return nil
 }
