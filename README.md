@@ -29,17 +29,17 @@ Create a simple manifest list as `simple.json`:
 
 ```
 {
-        "manifests": [
-                {
-                        "node_id": "",
-                        "labels": {},
-                        "assemblies": [
-                                {
-                                        "image": "docker.io/ehazlett/terra-simple:latest"
-                                }
-                        ]
-                }
-        ]
+  "manifests": [
+    {
+      "node_id": "",
+      "labels": {},
+      "assemblies": [
+        {
+          "image": "docker.io/ehazlett/terra-simple:latest"
+        }
+      ]
+    }
+  ]
 }
 ```
 
