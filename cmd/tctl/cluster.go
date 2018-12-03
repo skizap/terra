@@ -6,6 +6,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	api "github.com/stellarproject/nebula/terra/v1"
 	"github.com/urfave/cli"
 )
 
@@ -37,13 +38,19 @@ func nodes(ctx *cli.Context) error {
 	}
 
 	w := tabwriter.NewWriter(os.Stdout, 20, 1, 3, ' ', 0)
-	fmt.Fprintf(w, "ID\tADDRESS\tLABELS\n")
+	fmt.Fprintf(w, "ID\tADDRESS\tLABELS\tSTATUS\n")
 	for _, n := range nodes {
 		labels := []string{}
-		for k, v := range n.Labels {
+		for k, v := range n.GetLabels() {
 			labels = append(labels, fmt.Sprintf("%s=%s", k, v))
 		}
-		fmt.Fprintf(w, "%s\t%s\t%s\n", n.ID, n.Address, strings.Join(labels, ","))
+
+		state := api.NodeStatus_Status_name[int32(n.GetStatus().Status)]
+		status := fmt.Sprintf("%s", state)
+		if desc := n.GetStatus().GetDescription(); desc != "" {
+			status = fmt.Sprintf("%s (%s)", state, desc)
+		}
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", n.GetID(), n.GetAddress(), strings.Join(labels, ","), status)
 	}
 	w.Flush()
 

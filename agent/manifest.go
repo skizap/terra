@@ -3,6 +3,7 @@ package agent
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -21,17 +22,16 @@ import (
 )
 
 func (a *Agent) applyManifestList(ml *api.ManifestList) error {
-	a.updating = true
-	defer func() {
-		a.updating = false
-	}()
+	logrus.Debug("applying manifest list")
+	a.status.Set(api.NodeStatus_UPDATING, "")
 	// check assemblies and install if needed
 	for _, manifest := range ml.Manifests {
 		if err := a.applyManifest(manifest); err != nil {
-			logrus.WithError(err).Error("error applying manifest")
-			continue
+			a.status.Set(api.NodeStatus_FAILURE, err.Error())
+			return err
 		}
 	}
+	a.status.Set(api.NodeStatus_OK, "")
 
 	return nil
 }
@@ -58,6 +58,7 @@ func (a *Agent) applyManifest(m *api.Manifest) error {
 
 	for _, assembly := range m.Assemblies {
 		logrus.WithField("image", assembly.Image).Info("applying assembly")
+		a.status.Set(api.NodeStatus_UPDATING, fmt.Sprintf("applying assembly %s", assembly.Image))
 		if output, err := a.applyAssembly(assembly); err != nil {
 			logrus.WithError(err).Errorf("error applying assembly %s: %s", assembly.Image, string(output))
 			continue

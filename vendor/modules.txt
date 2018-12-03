@@ -62,8 +62,6 @@ github.com/hashicorp/go-sockaddr
 github.com/hashicorp/golang-lru/simplelru
 # github.com/hashicorp/memberlist v0.1.0
 github.com/hashicorp/memberlist
-# github.com/kr/fs v0.1.0
-github.com/kr/fs
 # github.com/miekg/dns v1.1.0
 github.com/miekg/dns
 # github.com/mitchellh/go-homedir v1.0.0
@@ -77,15 +75,13 @@ github.com/opencontainers/image-spec/specs-go
 github.com/opencontainers/runc/libcontainer/system
 # github.com/pkg/errors v0.8.0
 github.com/pkg/errors
-# github.com/pkg/sftp v1.8.3
-github.com/pkg/sftp
 # github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529
 github.com/sean-/seed
 # github.com/sirupsen/logrus v1.0.6
 github.com/sirupsen/logrus
 # github.com/stellarproject/element v0.0.0-20181130035726-db23484f9fd5
 github.com/stellarproject/element
-# github.com/stellarproject/nebula v0.0.0-20181201041556-96ca277202b9
+# github.com/stellarproject/nebula v0.0.0-20181203035134-54b1e25a33fc
 github.com/stellarproject/nebula/terra/v1
 # github.com/urfave/cli v1.20.0 => github.com/urfave/cli v1.20.1-0.20180821064027-934abfb2f102
 github.com/urfave/cli

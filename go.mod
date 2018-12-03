@@ -23,12 +23,12 @@ require (
 	github.com/opencontainers/image-spec v1.0.1
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/pkg/errors v0.8.0
-	github.com/pkg/sftp v1.8.3
+	github.com/pkg/sftp v1.8.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/sirupsen/logrus v1.0.6
 	github.com/stellarproject/element v0.0.0-20181130035726-db23484f9fd5
-	github.com/stellarproject/nebula v0.0.0-20181201041556-96ca277202b9
+	github.com/stellarproject/nebula v0.0.0-20181203035134-54b1e25a33fc
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/urfave/cli v1.20.0
 	go.etcd.io/bbolt v1.3.0

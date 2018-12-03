@@ -29,6 +29,31 @@ var (
 	empty = &ptypes.Empty{}
 )
 
+type status struct {
+	mu          *sync.Mutex
+	state       api.NodeStatus_Status
+	description string
+}
+
+func (s *status) State() api.NodeStatus_Status {
+	return s.state
+}
+
+func (s *status) Description() string {
+	return s.description
+}
+
+func (s *status) Set(state api.NodeStatus_Status, desc string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.state = state
+	s.description = desc
+}
+
+func (s *status) IsUpdating() bool {
+	return s.state == api.NodeStatus_UPDATING
+}
+
 type Agent struct {
 	grpcServer   *grpc.Server
 	config       *AgentConfig
@@ -36,7 +61,7 @@ type Agent struct {
 	mu           *sync.Mutex
 	manifestList *api.ManifestList
 	db           *bolt.DB
-	updating     bool
+	status       *status
 }
 
 type AgentConfig struct {
@@ -116,7 +141,10 @@ func NewAgent(cfg *AgentConfig) (*Agent, error) {
 		clusterAgent: agt,
 		mu:           &sync.Mutex{},
 		db:           db,
-		updating:     false,
+		status: &status{
+			mu:    &sync.Mutex{},
+			state: api.NodeStatus_OK,
+		},
 	}
 	api.RegisterTerraServer(grpcServer, agent)
 
@@ -151,7 +179,7 @@ func (a *Agent) sync() {
 	t := time.NewTicker(time.Second * 10)
 	for range t.C {
 		// skip if currently updating
-		if a.updating {
+		if a.status.IsUpdating() {
 			continue
 		}
 		if err := a.syncWithPeers(); err != nil {
@@ -235,11 +263,10 @@ func (a *Agent) updateManifestList(ml *api.ManifestList) error {
 	logrus.WithField("updated", ml.Updated).Info("updated manifest list")
 	// apply assemblies in manifest
 	go func() {
-		logrus.Debug("applying manifest list")
 		if err := a.applyManifestList(ml); err != nil {
 			logrus.WithError(err).Error("error applying manifest list")
+			return
 		}
-		logrus.Info("apply complete")
 	}()
 
 	return nil
@@ -269,6 +296,9 @@ func (a *Agent) restoreState() error {
 	if ml != nil {
 		a.manifestList = ml
 		logrus.WithField("updated", a.manifestList.Updated).Debug("restored state")
+		if err := a.applyManifestList(ml); err != nil {
+			return err
+		}
 	}
 
 	return nil
