@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	listTemplate = `{{ range .Manifests }}- NodeID: {{ .NodeID }} {{ if .Labels }}
-  Labels: {{ .Labels }}{{ end }}
+	listTemplate = `{{ range .Manifests }}- NodeID: {{ .NodeID }}{{ if .Labels }}
+  Labels: {{ range $k, $v := .Labels }}
+    - {{ $k }}={{ $v }}{{ end }}{{ end }}
   Assemblies:
 {{ range .Assemblies }}    - Image: {{ .Image }}
 {{ end }}
