@@ -62,9 +62,10 @@ func main() {
 			Value: "local",
 		},
 		cli.StringSliceFlag{
-			Name:  "peer",
-			Usage: "cluster peer(s) to join",
-			Value: &cli.StringSlice{},
+			Name:   "peer",
+			Usage:  "cluster peer(s) to join",
+			Value:  &cli.StringSlice{},
+			EnvVar: "TERRA_PEERS",
 		},
 		cli.StringSliceFlag{
 			Name:  "label",
