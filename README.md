@@ -14,7 +14,7 @@ To build, run `make`.  This will create binaries in `bin/`.
 The following example will show basic Terra usage.  First we will launch the Terra agent:
 
 ```
-$> terra agent
+$> terra
 ```
 
 View the current cluster nodes:
