@@ -13,6 +13,8 @@ github.com/Microsoft/hcsshim/internal/wclayer
 github.com/Microsoft/hcsshim/internal/timeout
 github.com/Microsoft/hcsshim/internal/longpath
 github.com/Microsoft/hcsshim/internal/safefile
+# github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da
+github.com/armon/go-metrics
 # github.com/containerd/containerd v1.1.3 => github.com/containerd/containerd v1.2.0-rc.0.0.20180921182233-87d1118a0f35
 github.com/containerd/containerd/archive
 github.com/containerd/containerd/archive/compression
@@ -36,14 +38,32 @@ github.com/containerd/continuity/devices
 github.com/containerd/continuity/driver
 github.com/containerd/continuity/pathdriver
 github.com/containerd/continuity/proto
+# github.com/gogo/protobuf v1.1.1
+github.com/gogo/protobuf/types
+github.com/gogo/protobuf/proto
+github.com/gogo/protobuf/sortkeys
 # github.com/golang/protobuf v1.2.0
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
-# github.com/kr/fs v0.1.0
-github.com/kr/fs
+# github.com/hashicorp/errwrap v1.0.0
+github.com/hashicorp/errwrap
+# github.com/hashicorp/go-immutable-radix v1.0.0
+github.com/hashicorp/go-immutable-radix
+# github.com/hashicorp/go-msgpack v0.0.0-20150518234257-fa3f63826f7c
+github.com/hashicorp/go-msgpack/codec
+# github.com/hashicorp/go-multierror v1.0.0
+github.com/hashicorp/go-multierror
+# github.com/hashicorp/go-sockaddr v0.0.0-20180320115054-6d291a969b86
+github.com/hashicorp/go-sockaddr
+# github.com/hashicorp/golang-lru v0.5.0
+github.com/hashicorp/golang-lru/simplelru
+# github.com/hashicorp/memberlist v0.1.0
+github.com/hashicorp/memberlist
+# github.com/miekg/dns v1.1.0
+github.com/miekg/dns
 # github.com/mitchellh/go-homedir v1.0.0
 github.com/mitchellh/go-homedir
 # github.com/opencontainers/go-digest v1.0.0-rc1
@@ -55,12 +75,18 @@ github.com/opencontainers/image-spec/specs-go
 github.com/opencontainers/runc/libcontainer/system
 # github.com/pkg/errors v0.8.0
 github.com/pkg/errors
-# github.com/pkg/sftp v1.8.3
-github.com/pkg/sftp
+# github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529
+github.com/sean-/seed
 # github.com/sirupsen/logrus v1.0.6
 github.com/sirupsen/logrus
+# github.com/stellarproject/element v0.0.0-20181130035726-db23484f9fd5
+github.com/stellarproject/element
+# github.com/stellarproject/nebula v0.0.0-20181203035134-54b1e25a33fc
+github.com/stellarproject/nebula/terra/v1
 # github.com/urfave/cli v1.20.0 => github.com/urfave/cli v1.20.1-0.20180821064027-934abfb2f102
 github.com/urfave/cli
+# go.etcd.io/bbolt v1.3.0
+go.etcd.io/bbolt
 # golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/agent
@@ -71,16 +97,56 @@ golang.org/x/crypto/internal/chacha20
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/ed25519/internal/edwards25519
 golang.org/x/crypto/internal/subtle
-# golang.org/x/net v0.0.0-20180921000356-2f5d2388922f
+# golang.org/x/net v0.0.0-20180925072008-f04abc6bdfa7
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/context
+golang.org/x/net/trace
+golang.org/x/net/internal/timeseries
+golang.org/x/net/http2
+golang.org/x/net/http2/hpack
+golang.org/x/net/ipv4
+golang.org/x/net/ipv6
+golang.org/x/net/http/httpguts
+golang.org/x/net/idna
+golang.org/x/net/bpf
+golang.org/x/net/internal/iana
+golang.org/x/net/internal/socket
 # golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.0.0-20180920110915-d641721ec2de
+# golang.org/x/sys v0.0.0-20180925112736-b09afc3d579e
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8
+# golang.org/x/text v0.3.0
+golang.org/x/text/secure/bidirule
+golang.org/x/text/unicode/bidi
+golang.org/x/text/unicode/norm
+golang.org/x/text/transform
+# google.golang.org/genproto v0.0.0-20180925191851-0e822944c569
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.15.0
+google.golang.org/grpc
+google.golang.org/grpc/credentials
+google.golang.org/grpc/balancer
+google.golang.org/grpc/balancer/roundrobin
 google.golang.org/grpc/codes
+google.golang.org/grpc/connectivity
+google.golang.org/grpc/encoding
+google.golang.org/grpc/encoding/proto
+google.golang.org/grpc/grpclog
+google.golang.org/grpc/internal
+google.golang.org/grpc/internal/backoff
+google.golang.org/grpc/internal/channelz
+google.golang.org/grpc/internal/envconfig
+google.golang.org/grpc/internal/grpcrand
+google.golang.org/grpc/internal/transport
+google.golang.org/grpc/keepalive
+google.golang.org/grpc/metadata
+google.golang.org/grpc/naming
+google.golang.org/grpc/peer
+google.golang.org/grpc/resolver
+google.golang.org/grpc/resolver/dns
+google.golang.org/grpc/resolver/passthrough
+google.golang.org/grpc/stats
 google.golang.org/grpc/status
+google.golang.org/grpc/tap
+google.golang.org/grpc/balancer/base
