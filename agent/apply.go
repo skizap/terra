@@ -11,7 +11,7 @@ import (
 func (a *Agent) Apply(ctx context.Context, req *api.ApplyRequest) (*ptypes.Empty, error) {
 	req.ManifestList.Updated = time.Now()
 
-	if err := a.updateManifestList(req.ManifestList); err != nil {
+	if err := a.updateManifestList(req.ManifestList, req.Force); err != nil {
 		return empty, err
 	}
 

@@ -21,12 +21,12 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-func (a *Agent) applyManifestList(ml *api.ManifestList) error {
+func (a *Agent) applyManifestList(ml *api.ManifestList, force bool) error {
 	logrus.Debug("applying manifest list")
 	a.status.Set(api.NodeStatus_UPDATING, "")
 	// check assemblies and install if needed
 	for _, manifest := range ml.Manifests {
-		if err := a.applyManifest(manifest); err != nil {
+		if err := a.applyManifest(manifest, force); err != nil {
 			a.status.Set(api.NodeStatus_FAILURE, err.Error())
 			return err
 		}
@@ -36,7 +36,7 @@ func (a *Agent) applyManifestList(ml *api.ManifestList) error {
 	return nil
 }
 
-func (a *Agent) applyManifest(m *api.Manifest) error {
+func (a *Agent) applyManifest(m *api.Manifest, force bool) error {
 	matches := false
 	// check if node id matches
 	if m.NodeID == "" && len(m.Labels) == 0 || a.config.NodeID == m.NodeID {
@@ -60,7 +60,7 @@ func (a *Agent) applyManifest(m *api.Manifest) error {
 	for _, assembly := range m.Assemblies {
 		logrus.WithField("image", assembly.Image).Info("applying assembly")
 		a.status.Set(api.NodeStatus_UPDATING, fmt.Sprintf("applying assembly %s", assembly.Image))
-		output, err := a.applyAssembly(assembly)
+		output, err := a.applyAssembly(assembly, force)
 		if err != nil {
 			logrus.WithError(err).Errorf("error applying assembly %s: %s", assembly.Image, string(output))
 			aErr = err
@@ -73,12 +73,12 @@ func (a *Agent) applyManifest(m *api.Manifest) error {
 	return aErr
 }
 
-func (a *Agent) applyAssembly(assembly *api.Assembly) ([]byte, error) {
+func (a *Agent) applyAssembly(assembly *api.Assembly, force bool) ([]byte, error) {
 	exists, err := a.assemblyApplied(assembly)
 	if err != nil {
 		return nil, err
 	}
-	if exists {
+	if !force && exists {
 		logrus.WithFields(logrus.Fields{
 			"assembly": assembly.Image,
 		}).Debug("assembly already applied")

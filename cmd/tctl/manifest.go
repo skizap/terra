@@ -68,8 +68,13 @@ var applyCommand = cli.Command{
 	Name:      "apply",
 	Usage:     "apply terra manifests",
 	ArgsUsage: "[MANIFEST_LIST]",
-	Flags:     []cli.Flag{},
-	Action:    apply,
+	Flags: []cli.Flag{
+		cli.BoolFlag{
+			Name:  "force",
+			Usage: "force apply manifest list",
+		},
+	},
+	Action: apply,
 }
 
 func apply(ctx *cli.Context) error {
@@ -78,6 +83,7 @@ func apply(ctx *cli.Context) error {
 		return nil
 	}
 	manifestListPath := ctx.Args().First()
+	force := ctx.Bool("force")
 	if _, err := os.Stat(manifestListPath); err != nil {
 		return err
 	}
@@ -96,7 +102,7 @@ func apply(ctx *cli.Context) error {
 		return err
 	}
 
-	if err := c.Apply(manifestList.Manifests); err != nil {
+	if err := c.Apply(manifestList.Manifests, force); err != nil {
 		return err
 	}
 
