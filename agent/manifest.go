@@ -56,18 +56,21 @@ func (a *Agent) applyManifest(m *api.Manifest) error {
 		return nil
 	}
 
+	var aErr error
 	for _, assembly := range m.Assemblies {
 		logrus.WithField("image", assembly.Image).Info("applying assembly")
 		a.status.Set(api.NodeStatus_UPDATING, fmt.Sprintf("applying assembly %s", assembly.Image))
-		if output, err := a.applyAssembly(assembly); err != nil {
+		output, err := a.applyAssembly(assembly)
+		if err != nil {
 			logrus.WithError(err).Errorf("error applying assembly %s: %s", assembly.Image, string(output))
+			aErr = err
 			continue
 		}
 
 		logrus.WithField("assembly", assembly.Image).Info("assembly applied successfully")
 	}
 
-	return nil
+	return aErr
 }
 
 func (a *Agent) applyAssembly(assembly *api.Assembly) ([]byte, error) {
@@ -152,7 +155,11 @@ func fetchImage(imageName, dest string) error {
 	if err != nil {
 		return err
 	}
-	resolver := docker.NewResolver(docker.ResolverOptions{})
+
+	authorizer := docker.NewAuthorizer(nil, getDockerCredentials)
+	resolver := docker.NewResolver(docker.ResolverOptions{
+		Authorizer: authorizer,
+	})
 	ctx := context.Background()
 
 	name, desc, err := resolver.Resolve(ctx, imageName)

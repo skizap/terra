@@ -1,6 +1,6 @@
 # github.com/Microsoft/go-winio v0.4.11
 github.com/Microsoft/go-winio
-# github.com/Microsoft/hcsshim v0.7.4
+# github.com/Microsoft/hcsshim v0.8.3
 github.com/Microsoft/hcsshim
 github.com/Microsoft/hcsshim/internal/guid
 github.com/Microsoft/hcsshim/internal/hcs
@@ -10,12 +10,15 @@ github.com/Microsoft/hcsshim/internal/interop
 github.com/Microsoft/hcsshim/internal/mergemaps
 github.com/Microsoft/hcsshim/internal/schema1
 github.com/Microsoft/hcsshim/internal/wclayer
+github.com/Microsoft/hcsshim/internal/guestrequest
+github.com/Microsoft/hcsshim/internal/logfields
 github.com/Microsoft/hcsshim/internal/timeout
+github.com/Microsoft/hcsshim/internal/schema2
 github.com/Microsoft/hcsshim/internal/longpath
 github.com/Microsoft/hcsshim/internal/safefile
 # github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da
 github.com/armon/go-metrics
-# github.com/containerd/containerd v1.1.3 => github.com/containerd/containerd v1.2.0-rc.0.0.20180921182233-87d1118a0f35
+# github.com/containerd/containerd v1.2.0 => github.com/containerd/containerd v1.2.1-0.20181204221901-0b0d6e6bdd78
 github.com/containerd/containerd/archive
 github.com/containerd/containerd/archive/compression
 github.com/containerd/containerd/content
@@ -29,7 +32,8 @@ github.com/containerd/containerd/errdefs
 github.com/containerd/containerd/filters
 github.com/containerd/containerd/platforms
 github.com/containerd/containerd/reference
-# github.com/containerd/continuity v0.0.0-20180921161001-7f53d412b9eb
+github.com/containerd/containerd/version
+# github.com/containerd/continuity v0.0.0-20181203112020-004b46473808
 github.com/containerd/continuity/fs
 github.com/containerd/continuity/sysx
 github.com/containerd/continuity
@@ -62,7 +66,9 @@ github.com/hashicorp/go-sockaddr
 github.com/hashicorp/golang-lru/simplelru
 # github.com/hashicorp/memberlist v0.1.0
 github.com/hashicorp/memberlist
-# github.com/miekg/dns v1.1.0
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+github.com/konsorten/go-windows-terminal-sequences
+# github.com/miekg/dns v1.1.1
 github.com/miekg/dns
 # github.com/mitchellh/go-homedir v1.0.0
 github.com/mitchellh/go-homedir
@@ -77,7 +83,7 @@ github.com/opencontainers/runc/libcontainer/system
 github.com/pkg/errors
 # github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529
 github.com/sean-/seed
-# github.com/sirupsen/logrus v1.0.6
+# github.com/sirupsen/logrus v1.2.0
 github.com/sirupsen/logrus
 # github.com/stellarproject/element v0.0.0-20181130035726-db23484f9fd5
 github.com/stellarproject/element
@@ -87,7 +93,7 @@ github.com/stellarproject/nebula/terra/v1
 github.com/urfave/cli
 # go.etcd.io/bbolt v1.3.0
 go.etcd.io/bbolt
-# golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b
+# golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/agent
 golang.org/x/crypto/ssh/terminal
@@ -123,7 +129,7 @@ golang.org/x/text/unicode/norm
 golang.org/x/text/transform
 # google.golang.org/genproto v0.0.0-20180925191851-0e822944c569
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.15.0
+# google.golang.org/grpc v1.17.0
 google.golang.org/grpc
 google.golang.org/grpc/credentials
 google.golang.org/grpc/balancer
@@ -135,9 +141,11 @@ google.golang.org/grpc/encoding/proto
 google.golang.org/grpc/grpclog
 google.golang.org/grpc/internal
 google.golang.org/grpc/internal/backoff
+google.golang.org/grpc/internal/binarylog
 google.golang.org/grpc/internal/channelz
 google.golang.org/grpc/internal/envconfig
 google.golang.org/grpc/internal/grpcrand
+google.golang.org/grpc/internal/grpcsync
 google.golang.org/grpc/internal/transport
 google.golang.org/grpc/keepalive
 google.golang.org/grpc/metadata
@@ -149,4 +157,7 @@ google.golang.org/grpc/resolver/passthrough
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
+google.golang.org/grpc/credentials/internal
 google.golang.org/grpc/balancer/base
+google.golang.org/grpc/binarylog/grpc_binarylog_v1
+google.golang.org/grpc/internal/syscall

@@ -152,12 +152,14 @@ func NewAgent(cfg *AgentConfig) (*Agent, error) {
 }
 
 func (a *Agent) Start() error {
-	if err := a.restoreState(); err != nil {
+	l, err := net.Listen("tcp", a.config.GRPCAddress)
+	if err != nil {
 		return err
 	}
 
-	l, err := net.Listen("tcp", a.config.GRPCAddress)
-	if err != nil {
+	go a.grpcServer.Serve(l)
+
+	if err := a.restoreState(); err != nil {
 		return err
 	}
 
@@ -167,7 +169,7 @@ func (a *Agent) Start() error {
 
 	go a.sync()
 
-	return a.grpcServer.Serve(l)
+	return nil
 }
 
 func (a *Agent) Stop() error {
