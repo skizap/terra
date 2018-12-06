@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/containerd/containerd/archive"
 	"github.com/containerd/containerd/archive/compression"
@@ -56,21 +57,38 @@ func (a *Agent) applyManifest(m *api.Manifest, force bool) error {
 		return nil
 	}
 
-	var aErr error
+	var errs []string
 	for _, assembly := range m.Assemblies {
 		logrus.WithField("image", assembly.Image).Info("applying assembly")
 		a.status.Set(api.NodeStatus_UPDATING, fmt.Sprintf("applying assembly %s", assembly.Image))
+		// apply requires
+		for _, req := range assembly.Requires {
+			logrus.WithFields(logrus.Fields{
+				"image":    assembly.Image,
+				"required": req,
+			}).Info("applying required assembly")
+			output, err := a.applyAssembly(assembly, force)
+			if err != nil {
+				logrus.WithError(err).Errorf("error applying required assembly %s: %s", req, string(output))
+				errs = append(errs, err.Error())
+				continue
+			}
+		}
+		// apply assembly
 		output, err := a.applyAssembly(assembly, force)
 		if err != nil {
 			logrus.WithError(err).Errorf("error applying assembly %s: %s", assembly.Image, string(output))
-			aErr = err
+			errs = append(errs, err.Error())
 			continue
 		}
 
 		logrus.WithField("assembly", assembly.Image).Info("assembly applied successfully")
 	}
 
-	return aErr
+	if len(errs) > 0 {
+		return fmt.Errorf(strings.Join(errs, ", "))
+	}
+	return nil
 }
 
 func (a *Agent) applyAssembly(assembly *api.Assembly, force bool) ([]byte, error) {

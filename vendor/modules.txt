@@ -87,7 +87,7 @@ github.com/sean-/seed
 github.com/sirupsen/logrus
 # github.com/stellarproject/element v0.0.0-20181130035726-db23484f9fd5
 github.com/stellarproject/element
-# github.com/stellarproject/nebula v0.0.0-20181205232816-bd4368b17fe9
+# github.com/stellarproject/nebula v0.0.0-20181205235037-85fed7052d1e
 github.com/stellarproject/nebula/terra/v1
 # github.com/urfave/cli v1.20.0 => github.com/urfave/cli v1.20.1-0.20180821064027-934abfb2f102
 github.com/urfave/cli

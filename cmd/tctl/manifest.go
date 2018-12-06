@@ -14,9 +14,10 @@ const (
   Labels: {{ range $k, $v := .Labels }}
     - {{ $k }}={{ $v }}{{ end }}{{ end }}
   Assemblies:
-{{ range .Assemblies }}    - Image: {{ .Image }}
-{{ end }}
-{{ end }}`
+{{ range .Assemblies }}    - Image: {{ .Image }}{{ if .Requires }}
+      Required:{{ range .Requires }}
+        - {{ . }}{{ end }}{{ end }}
+{{ end }}{{ end }}`
 )
 
 var manifestCommand = cli.Command{
