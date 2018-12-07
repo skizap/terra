@@ -227,7 +227,7 @@ func (a *Agent) syncWithPeers() error {
 		if ml.Updated.After(updated) {
 			logrus.Debugf("updating local manifest from peer %s", peer.ID)
 			// sync local payload
-			if err := a.updateManifestList(ml, false); err != nil {
+			if err := a.updateManifestList(ml); err != nil {
 				logrus.Errorf("error syncing manifest list with peer: %s", err)
 				c.Close()
 				continue
@@ -243,7 +243,7 @@ func (a *Agent) syncWithPeers() error {
 	return nil
 }
 
-func (a *Agent) updateManifestList(ml *api.ManifestList, force bool) error {
+func (a *Agent) updateManifestList(ml *api.ManifestList) error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
@@ -265,7 +265,7 @@ func (a *Agent) updateManifestList(ml *api.ManifestList, force bool) error {
 	logrus.WithField("updated", ml.Updated).Info("updated manifest list")
 	// apply assemblies in manifest
 	go func() {
-		if err := a.applyManifestList(ml, force); err != nil {
+		if err := a.applyManifestList(ml); err != nil {
 			logrus.WithError(err).Error("error applying manifest list")
 			return
 		}
@@ -293,14 +293,6 @@ func (a *Agent) restoreState() error {
 		return nil
 	}); err != nil {
 		return err
-	}
-
-	if ml != nil {
-		a.manifestList = ml
-		logrus.WithField("updated", a.manifestList.Updated).Debug("restored state")
-		if err := a.applyManifestList(ml, false); err != nil {
-			return err
-		}
 	}
 
 	return nil

@@ -13,7 +13,6 @@ func (c *Client) Apply(manifests []*api.Manifest, force bool) error {
 			Manifests: manifests,
 			Updated:   time.Now(),
 		},
-		Force: force,
 	}); err != nil {
 		return err
 	}

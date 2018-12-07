@@ -23,12 +23,12 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-func (a *Agent) applyManifestList(ml *api.ManifestList, force bool) error {
+func (a *Agent) applyManifestList(ml *api.ManifestList) error {
 	logrus.Debug("applying manifest list")
 	a.status.Set(api.NodeStatus_UPDATING, "")
 	// check assemblies and install if needed
 	for _, manifest := range ml.Manifests {
-		if err := a.applyManifest(manifest, force); err != nil {
+		if err := a.applyManifest(manifest); err != nil {
 			a.status.Set(api.NodeStatus_FAILURE, err.Error())
 			return err
 		}
@@ -38,7 +38,7 @@ func (a *Agent) applyManifestList(ml *api.ManifestList, force bool) error {
 	return nil
 }
 
-func (a *Agent) applyManifest(m *api.Manifest, force bool) error {
+func (a *Agent) applyManifest(m *api.Manifest) error {
 	matches := false
 	// check if node id matches
 	if m.NodeID == "" && len(m.Labels) == 0 || a.config.NodeID == m.NodeID {
@@ -68,7 +68,7 @@ func (a *Agent) applyManifest(m *api.Manifest, force bool) error {
 				"image":    assembly.Image,
 				"required": req,
 			}).Info("applying required assembly")
-			output, err := a.applyAssembly(&api.Assembly{Image: req}, force)
+			output, err := a.applyAssembly(&api.Assembly{Image: req})
 			if err != nil {
 				logrus.WithError(err).Errorf("error applying required assembly %s: %s", req, string(output))
 				errs = append(errs, err.Error())
@@ -76,7 +76,7 @@ func (a *Agent) applyManifest(m *api.Manifest, force bool) error {
 			}
 		}
 		// apply assembly
-		output, err := a.applyAssembly(assembly, force)
+		output, err := a.applyAssembly(assembly)
 		if err != nil {
 			logrus.WithError(err).Errorf("error applying assembly %s: %s", assembly.Image, string(output))
 			errs = append(errs, err.Error())
@@ -92,17 +92,7 @@ func (a *Agent) applyManifest(m *api.Manifest, force bool) error {
 	return nil
 }
 
-func (a *Agent) applyAssembly(assembly *api.Assembly, force bool) ([]byte, error) {
-	exists, err := a.assemblyApplied(assembly)
-	if err != nil {
-		return nil, err
-	}
-	if !force && exists {
-		logrus.WithFields(logrus.Fields{
-			"assembly": assembly.Image,
-		}).Debug("assembly already applied")
-		return nil, nil
-	}
+func (a *Agent) applyAssembly(assembly *api.Assembly) ([]byte, error) {
 	tmpdir, err := ioutil.TempDir("", "terra-assembly-")
 	if err != nil {
 		return nil, err

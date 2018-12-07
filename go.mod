@@ -25,7 +25,7 @@ require (
 	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/sirupsen/logrus v1.2.0
 	github.com/stellarproject/element v0.0.0-20181130035726-db23484f9fd5
-	github.com/stellarproject/nebula v0.0.0-20181205235037-85fed7052d1e
+	github.com/stellarproject/nebula v0.0.0-20181207031917-9f8232b1057f
 	github.com/urfave/cli v1.20.0
 	go.etcd.io/bbolt v1.3.0
 	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9
