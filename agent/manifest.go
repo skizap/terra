@@ -17,6 +17,7 @@ import (
 	"github.com/containerd/containerd/remotes"
 	"github.com/containerd/containerd/remotes/docker"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	api "github.com/stellarproject/nebula/terra/v1"
 	bolt "go.etcd.io/bbolt"
@@ -67,7 +68,7 @@ func (a *Agent) applyManifest(m *api.Manifest, force bool) error {
 				"image":    assembly.Image,
 				"required": req,
 			}).Info("applying required assembly")
-			output, err := a.applyAssembly(assembly, force)
+			output, err := a.applyAssembly(&api.Assembly{Image: req}, force)
 			if err != nil {
 				logrus.WithError(err).Errorf("error applying required assembly %s: %s", req, string(output))
 				errs = append(errs, err.Error())
@@ -112,16 +113,31 @@ func (a *Agent) applyAssembly(assembly *api.Assembly, force bool) ([]byte, error
 		return nil, err
 	}
 
+	nodePeers := []string{}
+	peers, err := a.clusterAgent.Peers()
+	if err != nil {
+		return nil, err
+	}
+	for _, peer := range peers {
+		nodePeers = append(nodePeers, peer.Address)
+	}
+	env := os.Environ()
+	// add terra env vars
+	env = append(env, fmt.Sprintf("TERRA_NODE_ID=%s", a.clusterAgent.Self().ID))
+	env = append(env, fmt.Sprintf("TERRA_NODE_ADDR=%s", a.clusterAgent.Self().Address))
+	env = append(env, fmt.Sprintf("TERRA_NODE_PEERS=%s", strings.Join(nodePeers, ",")))
+
 	var stdout, stderr bytes.Buffer
 	// exec 'install' from package
 	cmd := exec.Command("./install")
 	cmd.Dir = tmpdir
-	cmd.Env = os.Environ()
+	cmd.Env = env
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		return nil, err
+		out := append(stdout.Bytes(), stderr.Bytes()...)
+		return nil, errors.Wrap(err, string(out))
 	}
 
 	output := append(stdout.Bytes(), stderr.Bytes()...)
