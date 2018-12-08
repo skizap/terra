@@ -20,9 +20,11 @@ import (
 )
 
 const (
-	bucketState      = "io.stellarproject.terra.v1.state"
-	bucketAssemblies = "io.stellarproject.terra.v1.assemblies"
-	keyManifestList  = "manifest-list"
+	bucketState           = "io.stellarproject.terra.v1.state"
+	bucketAssemblies      = "io.stellarproject.terra.v1.assemblies"
+	keyManifestList       = "manifest-list"
+	cacheFilename         = "peers.json"
+	dsLocalPeerBucketName = "peers"
 )
 
 var (
@@ -59,6 +61,7 @@ type Agent struct {
 	config       *AgentConfig
 	clusterAgent *element.Agent
 	mu           *sync.Mutex
+	muCache      *sync.Mutex
 	manifestList *api.ManifestList
 	db           *bolt.DB
 	status       *status
@@ -102,20 +105,6 @@ func NewAgent(cfg *AgentConfig) (*Agent, error) {
 		grpcOpts = append(grpcOpts, grpc.Creds(creds))
 
 	}
-	agt, err := element.NewAgent(&element.Peer{
-		ID:      cfg.NodeID,
-		Address: cfg.GRPCAddress,
-		Labels:  cfg.Labels,
-	}, &element.Config{
-		ConnectionType:   cfg.ConnectionType,
-		ClusterAddress:   cfg.ClusterAddress,
-		AdvertiseAddress: cfg.AdvertiseAddress,
-		Peers:            cfg.Peers,
-		Debug:            false,
-	})
-	if err != nil {
-		return nil, err
-	}
 
 	// database setup
 	dbPath := filepath.Join(cfg.DataDir, "terra.db")
@@ -134,12 +123,36 @@ func NewAgent(cfg *AgentConfig) (*Agent, error) {
 		return nil, err
 	}
 
+	// check for peers
+	peers, err := getPeersFromCache(db, cfg.Peers)
+	if err != nil {
+		return nil, err
+	}
+	// override peers with discovered
+	cfg.Peers = peers
+
+	agt, err := element.NewAgent(&element.Peer{
+		ID:      cfg.NodeID,
+		Address: cfg.GRPCAddress,
+		Labels:  cfg.Labels,
+	}, &element.Config{
+		ConnectionType:   cfg.ConnectionType,
+		ClusterAddress:   cfg.ClusterAddress,
+		AdvertiseAddress: cfg.AdvertiseAddress,
+		Peers:            cfg.Peers,
+		Debug:            false,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	grpcServer := grpc.NewServer(grpcOpts...)
 	agent := &Agent{
 		grpcServer:   grpcServer,
 		config:       cfg,
 		clusterAgent: agt,
 		mu:           &sync.Mutex{},
+		muCache:      &sync.Mutex{},
 		db:           db,
 		status: &status{
 			mu:    &sync.Mutex{},
@@ -147,6 +160,9 @@ func NewAgent(cfg *AgentConfig) (*Agent, error) {
 		},
 	}
 	api.RegisterTerraServer(grpcServer, agent)
+
+	nodeEventCh := agt.Subscribe()
+	go agent.eventHandler(nodeEventCh)
 
 	return agent, nil
 }
@@ -175,6 +191,22 @@ func (a *Agent) Start() error {
 func (a *Agent) Stop() error {
 	a.clusterAgent.Shutdown()
 	return nil
+}
+
+func (a *Agent) eventHandler(ch chan *element.NodeEvent) {
+	for {
+		evt := <-ch
+		switch evt.Type {
+		case element.NodeUpdate:
+			node := evt.Node
+			if err := a.cachePeer(&Peer{
+				ID:      node.Name,
+				Address: node.Address(),
+			}); err != nil {
+				logrus.WithError(err).Errorf("error caching peer %s", node.Name)
+			}
+		}
+	}
 }
 
 func (a *Agent) sync() {
