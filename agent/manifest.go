@@ -3,6 +3,7 @@ package agent
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -20,15 +21,16 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	api "github.com/stellarproject/nebula/terra/v1"
+	"github.com/stellarproject/terra/client"
 	bolt "go.etcd.io/bbolt"
 )
 
-func (a *Agent) applyManifestList(ml *api.ManifestList) error {
+func (a *Agent) applyManifestList(ml *api.ManifestList, force bool) error {
 	logrus.Debug("applying manifest list")
 	a.status.Set(api.NodeStatus_UPDATING, "")
 	// check assemblies and install if needed
 	for _, manifest := range ml.Manifests {
-		if err := a.applyManifest(manifest); err != nil {
+		if err := a.applyManifest(manifest, force); err != nil {
 			a.status.Set(api.NodeStatus_FAILURE, err.Error())
 			return err
 		}
@@ -38,7 +40,7 @@ func (a *Agent) applyManifestList(ml *api.ManifestList) error {
 	return nil
 }
 
-func (a *Agent) applyManifest(m *api.Manifest) error {
+func (a *Agent) applyManifest(m *api.Manifest, force bool) error {
 	matches := false
 	// check if node id matches
 	if m.NodeID == "" && len(m.Labels) == 0 || a.config.NodeID == m.NodeID {
@@ -68,7 +70,7 @@ func (a *Agent) applyManifest(m *api.Manifest) error {
 				"image":    assembly.Image,
 				"required": req,
 			}).Info("applying required assembly")
-			output, err := a.applyAssembly(&api.Assembly{Image: req})
+			output, err := a.applyAssembly(&api.Assembly{Image: req}, force)
 			if err != nil {
 				logrus.WithError(err).Errorf("error applying required assembly %s: %s", req, string(output))
 				errs = append(errs, err.Error())
@@ -76,7 +78,7 @@ func (a *Agent) applyManifest(m *api.Manifest) error {
 			}
 		}
 		// apply assembly
-		output, err := a.applyAssembly(assembly)
+		output, err := a.applyAssembly(assembly, force)
 		if err != nil {
 			logrus.WithError(err).Errorf("error applying assembly %s: %s", assembly.Image, string(output))
 			errs = append(errs, err.Error())
@@ -92,7 +94,14 @@ func (a *Agent) applyManifest(m *api.Manifest) error {
 	return nil
 }
 
-func (a *Agent) applyAssembly(assembly *api.Assembly) ([]byte, error) {
+func (a *Agent) applyAssembly(assembly *api.Assembly, force bool) ([]byte, error) {
+	applied, err := a.assemblyApplied(assembly)
+	if err != nil {
+		return nil, err
+	}
+	if applied && !force {
+		return nil, err
+	}
 	tmpdir, err := ioutil.TempDir("", "terra-assembly-")
 	if err != nil {
 		return nil, err
@@ -116,6 +125,10 @@ func (a *Agent) applyAssembly(assembly *api.Assembly) ([]byte, error) {
 	env = append(env, fmt.Sprintf("TERRA_NODE_ID=%s", a.clusterAgent.Self().ID))
 	env = append(env, fmt.Sprintf("TERRA_NODE_ADDR=%s", a.clusterAgent.Self().Address))
 	env = append(env, fmt.Sprintf("TERRA_NODE_PEERS=%s", strings.Join(nodePeers, ",")))
+	// add parameters
+	for k, v := range assembly.Parameters {
+		env = append(env, fmt.Sprintf("TERRA_%s=%s", strings.ToUpper(k), v))
+	}
 
 	var stdout, stderr bytes.Buffer
 	// exec 'install' from package
@@ -230,6 +243,69 @@ func fetchImage(imageName, dest string) error {
 	}); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (a *Agent) updateManifestList(ml *api.ManifestList, force bool) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	// update in memory copy
+	a.manifestList = ml
+
+	// persist to disk
+	if err := a.db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucketState))
+		data, err := json.Marshal(ml)
+		if err != nil {
+			return err
+		}
+		return b.Put([]byte(keyManifestList), data)
+	}); err != nil {
+		return err
+	}
+
+	logrus.WithField("updated", ml.Updated).Info("updated manifest list")
+
+	//wg := &sync.WaitGroup{}
+	// apply assemblies in manifest
+	go func() {
+		//wg.Add(1)
+		//defer wg.Done()
+		if err := a.applyManifestList(ml, force); err != nil {
+			logrus.WithError(err).Error("error applying manifest list")
+			return
+		}
+	}()
+	// if force is specified apply on entire cluster
+	if force {
+		//wg.Add(1)
+		//defer wg.Done()
+		peers, err := a.clusterAgent.Peers()
+		if err != nil {
+			return errors.Wrap(err, "error getting peers to update manifest list")
+		}
+
+		for _, peer := range peers {
+			go func() {
+				//wg.Add(1)
+				//defer wg.Done()
+				c, err := client.NewClient(peer.Address)
+				defer c.Close()
+				if err != nil {
+					logrus.WithError(err).Errorf("error getting client for peer %s", peer.Address)
+					return
+				}
+				if err := c.Apply(ml.Manifests, true); err != nil {
+					logrus.WithError(err).Errorf("error applying manifest list for peer %s", peer.Address)
+					return
+				}
+			}()
+		}
+	}
+
+	//wg.Wait()
 
 	return nil
 }

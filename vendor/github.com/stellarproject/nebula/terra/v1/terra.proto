@@ -9,10 +9,16 @@ import "google/protobuf/empty.proto";
 option go_package = "github.com/stellarproject/nebula/terra/v1;v1";
 
 service Terra {
+        // List is used to list manifests
 	rpc List(ListRequest) returns (ListResponse);
+        // Apply applies a manifest directly to the node
 	rpc Apply(ApplyRequest) returns (google.protobuf.Empty);
+        // Nodes returns a list of nodes
         rpc Nodes(NodesRequest) returns (NodesResponse);
+        // Status returns the current node status
         rpc Status(StatusRequest) returns (StatusResponse);
+        // Update updates the current manifest list for the cluster
+        rpc Update(UpdateRequest) returns (google.protobuf.Empty);
 }
 
 message ListRequest {}
@@ -24,6 +30,7 @@ message ListResponse {
 message Assembly {
         string image = 1;
         repeated string requires = 2;
+        map<string, string> parameters = 3;
 }
 
 message Manifest {
@@ -39,6 +46,7 @@ message ManifestList {
 
 message ApplyRequest {
         ManifestList manifest_list = 1;
+        bool force = 2;
 }
 
 message NodesRequest {}
@@ -69,4 +77,9 @@ message NodeStatus {
 
 message StatusResponse {
         NodeStatus node_status = 1;
+}
+
+message UpdateRequest {
+        ManifestList manifest_list = 1;
+        bool force = 2;
 }

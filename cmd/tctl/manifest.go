@@ -16,7 +16,9 @@ const (
   Assemblies:
 {{ range .Assemblies }}    - Image: {{ .Image }}{{ if .Requires }}
       Required:{{ range .Requires }}
-        - {{ . }}{{ end }}{{ end }}
+        - {{ . }}{{ end }}{{ end }}{{ if .Parameters }}
+      Parameters:{{ range $k, $v := .Parameters }}
+        - {{ $k }}={{ $v }}{{ end }}{{ end }}
 {{ end }}{{ end }}`
 )
 
@@ -26,6 +28,7 @@ var manifestCommand = cli.Command{
 	Subcommands: []cli.Command{
 		listCommand,
 		applyCommand,
+		updateCommand,
 	},
 }
 
@@ -67,7 +70,7 @@ func list(ctx *cli.Context) error {
 
 var applyCommand = cli.Command{
 	Name:      "apply",
-	Usage:     "apply terra manifests",
+	Usage:     "apply terra manifests directly to the node",
 	ArgsUsage: "[MANIFEST_LIST]",
 	Flags: []cli.Flag{
 		cli.BoolFlag{
@@ -104,6 +107,51 @@ func apply(ctx *cli.Context) error {
 	}
 
 	if err := c.Apply(manifestList.Manifests, force); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var updateCommand = cli.Command{
+	Name:      "update",
+	Usage:     "update terra manifest list for the cluster",
+	ArgsUsage: "[MANIFEST_LIST]",
+	Flags: []cli.Flag{
+		cli.BoolFlag{
+			Name:  "force",
+			Usage: "force update manifest list",
+		},
+	},
+	Action: update,
+}
+
+func update(ctx *cli.Context) error {
+	if len(ctx.Args()) == 0 {
+		cli.ShowSubcommandHelp(ctx)
+		return nil
+	}
+	manifestListPath := ctx.Args().First()
+	force := ctx.Bool("force")
+	if _, err := os.Stat(manifestListPath); err != nil {
+		return err
+	}
+	c, err := getClient(ctx)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+
+	var manifestList *api.ManifestList
+	f, err := os.Open(manifestListPath)
+	if err != nil {
+		return err
+	}
+	if err := json.NewDecoder(f).Decode(&manifestList); err != nil {
+		return err
+	}
+
+	if err := c.Update(manifestList.Manifests, force); err != nil {
 		return err
 	}
 

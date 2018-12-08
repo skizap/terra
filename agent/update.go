@@ -8,10 +8,10 @@ import (
 	api "github.com/stellarproject/nebula/terra/v1"
 )
 
-func (a *Agent) Apply(ctx context.Context, req *api.ApplyRequest) (*ptypes.Empty, error) {
+func (a *Agent) Update(ctx context.Context, req *api.UpdateRequest) (*ptypes.Empty, error) {
 	req.ManifestList.Updated = time.Now()
 
-	if err := a.applyManifestList(req.ManifestList, req.Force); err != nil {
+	if err := a.updateManifestList(req.ManifestList, req.Force); err != nil {
 		return empty, err
 	}
 
