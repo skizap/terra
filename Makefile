@@ -37,9 +37,6 @@ lint:
 	@echo " -> $@"
 	@golint -set_exit_status ${PACKAGES}
 
-kernel:
-	@buildctl build --frontend=dockerfile.v0 --frontend-opt filename=Dockerfile  --local context=. --local dockerfile=. --progress plain --exporter=local --exporter-opt output=.
-
 check: vet lint
 
 test:
@@ -52,4 +49,4 @@ clean:
 	@rm -rf bin/
 	@rm -rf ./*.deb
 
-.PHONY: generate clean check test install app binaries kernel
+.PHONY: generate clean check test install app binaries
